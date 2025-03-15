@@ -1,0 +1,26 @@
+# Use an official Golang image as a builder
+FROM golang:1.20 AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy the source code
+COPY . .
+
+# Build the Gophish binary
+RUN go build -o gophish
+
+# Use a lightweight image for deployment
+FROM ubuntu:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy the compiled binary from the builder
+COPY --from=builder /app/gophish /app/gophish
+
+# Expose necessary ports
+EXPOSE 3333 80
+
+# Set the entry point
+CMD ["/app/gophish"]
